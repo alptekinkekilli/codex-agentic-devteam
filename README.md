@@ -19,6 +19,7 @@ the queue/dashboard/tooling substrate.
 - `AGENTS.md` — Codex-native operating rules.
 - `GOVERNOR.md` — governor charter, gates, known pitfalls, and recovery patterns.
 - `docs/governor-prompts.md` — copy-paste prompts for continuing reviewer/tester/ops safely.
+- `docs/install.md` — macOS/Linux/Windows install commands and first Governor prompts.
 - `agents/` — role charters for architect, coder, reviewer, tester, and ops.
 - `scripts/` — queue lifecycle, Codex driver, dashboard generator/server, and token usage recorder.
 - `docs/controls/` — model routing and role capability policy.
@@ -70,6 +71,9 @@ python3 scripts/serve_dashboard_preview.py --live
 
 The server defaults to `http://127.0.0.1:8766/?live=1`. If `8766` is busy, it
 uses the next available port.
+
+For OS-specific install commands and the first Governor prompts, see
+[`docs/install.md`](docs/install.md).
 
 ## Cookiecutter Install
 

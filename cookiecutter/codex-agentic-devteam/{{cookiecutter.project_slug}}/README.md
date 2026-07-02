@@ -31,6 +31,7 @@ Then open the URL printed by the server.
 
 - Read `AGENTS.md` and `GOVERNOR.md` before starting a loop.
 - Use `docs/governor-prompts.md` for reviewer/tester/ops continuation prompts.
+- Use `docs/install.md` for OS-specific setup commands and first Governor prompts.
 - Diagnose first; write precise architect briefs.
 - Approve the architect plan before starting coder work.
 - Treat dashboard/queue/driver/config changes as governor-direct.
