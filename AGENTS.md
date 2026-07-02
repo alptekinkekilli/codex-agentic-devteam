@@ -54,6 +54,10 @@ It runs headless agents through:
 codex exec --json
 ```
 
+The driver resolves Codex from `PATH` first, then from the macOS Codex Desktop
+fallback path `/Applications/Codex.app/Contents/Resources/codex`. It loads a
+project-local `.env` for child processes without printing values.
+
 Model and reasoning choices come from `docs/controls/model_routing.json`.
 
 Default routing:

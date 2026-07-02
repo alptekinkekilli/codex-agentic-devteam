@@ -15,6 +15,30 @@ SCOPE="${2:?usage: role-agent.sh <role> <scope>}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
+resolve_codex() {
+  if command -v codex >/dev/null 2>&1; then
+    command -v codex
+    return 0
+  fi
+  if [ -x "/Applications/Codex.app/Contents/Resources/codex" ]; then
+    echo "/Applications/Codex.app/Contents/Resources/codex"
+    return 0
+  fi
+  return 1
+}
+
+load_local_env() {
+  if [ -f ".env" ]; then
+    # Project-local secrets are loaded for child processes only. Do not print them.
+    set +u
+    set -a
+    # shellcheck disable=SC1091
+    . ./.env
+    set +a
+    set -u
+  fi
+}
+
 alias_for() {
   case "$1" in
     architect) echo fast-planner ;;
@@ -42,6 +66,11 @@ fi
 # Resolve the configured model and reasoning effort for this role's tier (model_routing.json).
 MODEL="$(python3 -c "import json,sys;r=json.load(open('docs/controls/model_routing.json'));print(r['tiers'][r['roles'][sys.argv[1]]['tier']].get('model','gpt-5.5'))" "$ROLE" 2>/dev/null || echo gpt-5.5)"
 REASONING_EFFORT="$(python3 -c "import json,sys;r=json.load(open('docs/controls/model_routing.json'));print(r['tiers'][r['roles'][sys.argv[1]]['tier']].get('reasoning_effort','medium'))" "$ROLE" 2>/dev/null || echo medium)"
+if ! CODEX_BIN="$(resolve_codex)"; then
+  echo "error: Codex CLI not found. Install Codex CLI, add it to PATH, or install Codex.app at /Applications/Codex.app." >&2
+  exit 1
+fi
+load_local_env
 
 if [ -n "$NEXT" ]; then
   RELAY="When you finish, create and enqueue EXACTLY ONE bounded follow-up task JSON for role ${NEXT} (project_scope ${SCOPE}) via scripts/enqueue.py so the ${NEXT} agent can continue the architect->coder->reviewer->tester->ops chain."
@@ -51,6 +80,7 @@ fi
 
 echo "================================================================"
 echo " ${SCOPE} :: ${ROLE} agent (${ALIAS}) — model=${MODEL} reasoning=${REASONING_EFFORT} — headless"
+echo " codex: ${CODEX_BIN}"
 echo " watching .queue/pending for role=${ROLE} scope=${SCOPE}"
 echo " no push / no PR / no secrets — Ctrl+C to stop"
 echo "================================================================"
@@ -85,7 +115,7 @@ HARD RULES: no deploy, no secrets/tokens/env-vars, no DNS/provider API, no git p
 
     TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
     printf '%s\n' "$(cat "agents/${ROLE}.md")" "" "$PROMPT" \
-      | RUST_LOG=error AGENT_ROLE="${ROLE}" AGENT_MODEL_ALIAS="${ALIAS}" codex exec --json \
+      | RUST_LOG=error AGENT_ROLE="${ROLE}" AGENT_MODEL_ALIAS="${ALIAS}" "${CODEX_BIN}" exec --json \
           --ignore-user-config \
           --model "${MODEL}" \
           --config "model_reasoning_effort=\"${REASONING_EFFORT}\"" \

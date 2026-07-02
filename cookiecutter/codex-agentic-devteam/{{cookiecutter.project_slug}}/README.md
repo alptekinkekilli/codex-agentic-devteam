@@ -30,6 +30,7 @@ Then open the URL printed by the server.
 ## Governor Rules
 
 - Read `AGENTS.md` and `GOVERNOR.md` before starting a loop.
+- Use `docs/governor-prompts.md` for reviewer/tester/ops continuation prompts.
 - Diagnose first; write precise architect briefs.
 - Approve the architect plan before starting coder work.
 - Treat dashboard/queue/driver/config changes as governor-direct.
@@ -73,6 +74,28 @@ Default:
 - Reviewer: `gpt-5.4`, high
 - Tester: `gpt-5.4-mini`, low
 - Ops: `gpt-5.4-mini`, low
+
+## Codex Binary And .env
+
+`scripts/role-agent.sh` resolves Codex from `PATH`, then from:
+
+```bash
+/Applications/Codex.app/Contents/Resources/codex
+```
+
+It also loads project-local `.env` for child processes without printing values.
+
+For Hugging Face image generation, keep the token in `.env`:
+
+```bash
+HF_TOKEN=...
+```
+
+Check only booleans:
+
+```bash
+python3 -c 'import os; print("HF_TOKEN in env:", bool(os.getenv("HF_TOKEN")))'
+```
 
 ## Publish
 

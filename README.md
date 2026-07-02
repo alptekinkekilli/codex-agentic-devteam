@@ -18,6 +18,7 @@ the queue/dashboard/tooling substrate.
 
 - `AGENTS.md` — Codex-native operating rules.
 - `GOVERNOR.md` — governor charter, gates, known pitfalls, and recovery patterns.
+- `docs/governor-prompts.md` — copy-paste prompts for continuing reviewer/tester/ops safely.
 - `agents/` — role charters for architect, coder, reviewer, tester, and ops.
 - `scripts/` — queue lifecycle, Codex driver, dashboard generator/server, and token usage recorder.
 - `docs/controls/` — model routing and role capability policy.
@@ -42,6 +43,14 @@ Check Codex:
 codex --version
 codex exec --help
 ```
+
+On macOS Codex Desktop, the binary may exist even when `codex` is not on `PATH`:
+
+```bash
+/Applications/Codex.app/Contents/Resources/codex --version
+```
+
+`scripts/role-agent.sh` checks both locations before claiming a task.
 
 ## Quick Start
 
@@ -189,6 +198,22 @@ Live mode regenerates snapshots on `/status/*.json` requests with a throttle.
 Dashboard files are protected governor-owned tooling. Do not assign them to
 role-agent tasks.
 
+## Environment Secrets
+
+Project-local `.env` is gitignored. `scripts/role-agent.sh` sources `.env`
+before launching Codex so environment-only secrets can reach child processes.
+The driver never prints secret values.
+
+For Hugging Face image generation:
+
+```bash
+grep -Eq '^(export )?HF_TOKEN=.+' .env && echo "HF_TOKEN line exists"
+python3 -c 'import os; print("HF_TOKEN in env:", bool(os.getenv("HF_TOKEN")))'
+```
+
+The second command only returns `True` after `.env` is loaded in the current
+shell or by the role driver.
+
 ## Validation Gates
 
 Always run:
@@ -222,6 +247,7 @@ printf '%s\n' 'Respond with exactly: OK' \
 - The dashboard is not part of the minimal scaffold because role agents must not
   mutate the governor control surface.
 - `codex exec --json` emits JSONL, not a single JSON object.
+- macOS Codex Desktop may not put `codex` on `PATH`; use the app bundle fallback.
 - Some local Codex plugin/MCP configs can add noisy warnings; the driver uses
   `RUST_LOG=error` and `--ignore-user-config` for cleaner headless logs.
 - Non-git workspaces need `--skip-git-repo-check`.
@@ -230,12 +256,16 @@ printf '%s\n' 'Respond with exactly: OK' \
   defaults to `8766` and auto-finds the next free port.
 - Follow-up task `model_tier` and `model_alias` must match
   `model_routing.json`.
+- Implementation coder tasks must include real application paths in
+  `allowed_paths`; `.queue/` alone means the governor must reconcile the task.
+- `.env` lines are not visible to agents unless loaded into process environment.
 - A task manually placed in `.queue/done/` is not valid; close with
   `complete_task.py`.
 - Public dashboard snapshots are generated artifacts and should not be treated
   as source truth.
 
 More details are in `GOVERNOR.md` and `docs/operating-pitfalls.md`.
+Use `docs/governor-prompts.md` for continuation prompts after each role completes.
 
 ## Publishing A Derived Repo
 

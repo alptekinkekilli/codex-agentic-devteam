@@ -23,6 +23,9 @@ Then the governor protects those paths in `AGENTS.md` and
 ## Codex Driver Details
 
 - Use `codex exec --json` for headless role agents.
+- On macOS, Codex Desktop may install the CLI at
+  `/Applications/Codex.app/Contents/Resources/codex` without putting `codex`
+  on `PATH`. The driver must resolve both locations before a task is claimed.
 - `--json` emits JSONL events, not one JSON document.
 - Parse `turn.completed` for usage and `item.completed` with
   `item.type == "agent_message"` for final text.
@@ -32,6 +35,9 @@ Then the governor protects those paths in `AGENTS.md` and
 - Use `--dangerously-bypass-approvals-and-sandbox` only inside the role driver,
   because tasks are already constrained by queue metadata, capability policy, and
   governor approval.
+- Load project-local `.env` before launching role agents when a task needs
+  environment-only secrets such as `HF_TOKEN`. The driver may source `.env`, but
+  it must never print values.
 
 ## Model Routing
 
@@ -57,6 +63,32 @@ If `loop.sh` seeds a task with stale aliases, `control_check.py` catches it.
   `"status": "done"` and a valid `result`.
 - Stop a role driver before manually editing a pending task that it could claim.
 - ID collisions cause claim loops; check all queue directories before reusing an id.
+- If an implementation task has `allowed_paths: [".queue/"]`, stop. That is a
+  contract bug, not a coder failure. Reconcile the task before any driver claims
+  it.
+- If a failed coder enqueues a reviewer handoff for a blocked/non-implementation
+  task, supersede that reviewer task before proceeding with a corrected coder
+  task.
+
+## Governor Watch Discipline
+
+- Start `scripts/governor-watch.sh` before starting a role driver.
+- After a driver/tooling fix, do not restart the whole build chain. Run the next
+  pending role in isolation, audit the result, then continue.
+- `loop.sh build <scope>` is valid after the driver is proven, but isolated
+  role runs are safer when recovering from driver, PATH, model, or auth issues.
+
+## Hugging Face Assets
+
+- `.env` content is not automatically in process environment unless loaded by
+  the shell or driver.
+- Check only booleans, never values:
+  `python3 -c 'import os; print("HF_TOKEN in env:", bool(os.getenv("HF_TOKEN")))'`.
+- If `HF_TOKEN` is absent and the coder creates an SVG fallback, the governor
+  must decide whether the fallback satisfies the product goal or whether to
+  create a bounded HF asset follow-up.
+- HF asset notes should include prompt, model, and output path, but never token
+  values.
 
 ## Dashboard Runtime
 
