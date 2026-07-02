@@ -1,0 +1,85 @@
+{
+  "policy_version": "1.0",
+  "default_provider": "openai",
+  "tiers": {
+    "gpt-5.5-high": {
+      "purpose": "Governor-grade planning, gating, and high-stakes orchestration.",
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "model_id": "gpt-5.5-high",
+      "reasoning_effort": "high",
+      "cost_weight": 5,
+      "speed_weight": 3,
+      "quality_weight": 5
+    },
+    "gpt-5.5-medium": {
+      "purpose": "Implementation work where strong code generation is needed without maximum reasoning spend.",
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "model_id": "gpt-5.5-medium",
+      "reasoning_effort": "medium",
+      "cost_weight": 4,
+      "speed_weight": 3,
+      "quality_weight": 4
+    },
+    "gpt-5.4-high": {
+      "purpose": "Architecture and review work that needs careful reasoning with lower implementation load.",
+      "provider": "openai",
+      "model": "gpt-5.4",
+      "model_id": "gpt-5.4-high",
+      "reasoning_effort": "high",
+      "cost_weight": 2,
+      "speed_weight": 3,
+      "quality_weight": 4
+    },
+    "gpt-5.4-mini": {
+      "purpose": "Routine validation, reporting, operations notes, and repeatable checks.",
+      "provider": "openai",
+      "model": "gpt-5.4-mini",
+      "model_id": "gpt-5.4-mini",
+      "reasoning_effort": "low",
+      "cost_weight": 1,
+      "speed_weight": 4,
+      "quality_weight": 2
+    }
+  },
+  "roles": {
+    "governor": {
+      "tier": "gpt-5.5-high",
+      "alias": "governor-gpt-5.5-high",
+      "reason": "Governor owns plan approval, independent verification, and tooling governance."
+    },
+    "architect": {
+      "tier": "gpt-5.4-high",
+      "alias": "architect-gpt-5.4-high",
+      "reason": "Architecture decomposition and task writing need high reasoning before implementation begins."
+    },
+    "coder": {
+      "tier": "gpt-5.5-medium",
+      "alias": "coder-gpt-5.5-medium",
+      "reason": "Coder owns real implementation changes and should use GPT-5.5 with medium reasoning."
+    },
+    "reviewer": {
+      "tier": "gpt-5.4-high",
+      "alias": "reviewer-gpt-5.4-high",
+      "reason": "Reviewer checks scope, risks, and handoff quality with high reasoning and low write authority."
+    },
+    "tester": {
+      "tier": "gpt-5.4-mini",
+      "alias": "tester-gpt-5.4-mini",
+      "reason": "Tester runs repeatable validation and records pass/fail evidence."
+    },
+    "ops": {
+      "tier": "gpt-5.4-mini",
+      "alias": "ops-gpt-5.4-mini",
+      "reason": "Ops handles routine deployment notes, verification, and rollback records."
+    }
+  },
+  "budget_guardrails": {
+    "premium_allowed_roles": [
+      "coder"
+    ],
+    "require_reason_for_premium": true,
+    "estimated_savings_target": "Reserve GPT-5.5 high for governor and GPT-5.5 medium for coder; use GPT-5.4 high/mini for other roles."
+  }
+}

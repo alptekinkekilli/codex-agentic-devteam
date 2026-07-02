@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agentic Devteam Dashboard</title>
+    <link rel="stylesheet" href="./styles.css?v=usage4" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow" id="repo-role">Private devteam</p>
+          <h1 id="project-name">Agentic Devteam</h1>
+        </div>
+        <div class="status-cluster" aria-live="polite">
+          <div class="status-pill" id="snapshot-status">Loading</div>
+          <button class="refresh-button" id="refresh-snapshots" type="button">Refresh</button>
+          <span class="snapshot-detail" id="snapshot-detail"></span>
+        </div>
+      </header>
+
+      <section class="metrics" aria-label="Queue metrics">
+        <article>
+          <span>Pending</span>
+          <strong id="metric-pending">0</strong>
+        </article>
+        <article>
+          <span>In progress</span>
+          <strong id="metric-in-progress">0</strong>
+        </article>
+        <article>
+          <span>Done</span>
+          <strong id="metric-done">0</strong>
+        </article>
+        <article>
+          <span>Failed</span>
+          <strong id="metric-failed">0</strong>
+        </article>
+      </section>
+
+      <section class="ticker-bar" aria-label="Live agent activity">
+        <span class="ticker-label">CANLI</span>
+        <div class="ticker-viewport">
+          <div class="ticker-track" id="ticker-track"></div>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <aside class="panel">
+          <h2>Health</h2>
+          <dl class="health-list" id="health-list"></dl>
+        </aside>
+
+        <section class="panel task-panel">
+          <div class="panel-heading">
+            <h2>Tasks</h2>
+            <div class="task-controls">
+              <div class="tabs" aria-label="Task view">
+                <button class="tab active" id="tab-table" type="button" data-view="table">Table</button>
+                <button class="tab" id="tab-kanban" type="button" data-view="kanban">Kanban</button>
+                <button class="tab" id="tab-timeline" type="button" data-view="timeline">Timeline</button>
+              </div>
+              <select id="role-filter" aria-label="Filter tasks by role">
+                <option value="all">All roles</option>
+              </select>
+              <select id="scope-filter" aria-label="Filter tasks by project scope">
+                <option value="all">All history</option>
+              </select>
+            </div>
+            <div class="archive-bar hidden" id="archive-bar" aria-label="Archive controls">
+              <span class="archive-hint">Select done tasks to archive</span>
+              <button class="archive-button" id="archive-selected" type="button" disabled>
+                Archive selected (0)
+              </button>
+            </div>
+          </div>
+          <div class="table-wrap" id="task-table-view">
+            <table>
+              <thead>
+                <tr>
+                  <th>Task</th>
+                  <th>Status</th>
+                  <th>Role</th>
+                  <th>Model</th>
+                  <th>Validation</th>
+                </tr>
+              </thead>
+              <tbody id="task-table"></tbody>
+            </table>
+          </div>
+          <div class="kanban-board hidden" id="task-kanban-view" aria-label="Task Kanban board">
+            <section class="kanban-column" data-status="pending">
+              <div class="kanban-heading">
+                <h3>Pending</h3>
+                <span id="kanban-count-pending">0</span>
+              </div>
+              <div class="kanban-cards" id="kanban-pending"></div>
+            </section>
+            <section class="kanban-column" data-status="in-progress">
+              <div class="kanban-heading">
+                <h3>In progress</h3>
+                <span id="kanban-count-in-progress">0</span>
+              </div>
+              <div class="kanban-cards" id="kanban-in-progress"></div>
+            </section>
+            <section class="kanban-column" data-status="done">
+              <div class="kanban-heading">
+                <h3>Done</h3>
+                <span id="kanban-count-done">0</span>
+              </div>
+              <div class="kanban-cards" id="kanban-done"></div>
+            </section>
+            <section class="kanban-column" data-status="failed">
+              <div class="kanban-heading">
+                <h3>Failed</h3>
+                <span id="kanban-count-failed">0</span>
+              </div>
+              <div class="kanban-cards" id="kanban-failed"></div>
+            </section>
+          </div>
+          <div class="timeline-view hidden" id="task-timeline-view" aria-label="Task timeline">
+            <div class="timeline-list" id="task-timeline"></div>
+          </div>
+        </section>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>Agents</h2>
+          <span id="generated-at"></span>
+        </div>
+        <div class="agent-grid" id="agent-grid"></div>
+      </section>
+
+      <section class="panel" aria-label="Token performance">
+        <div class="panel-heading">
+          <h2>Token Performance</h2>
+          <span class="usage-totals" id="usage-totals"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Completed</th>
+                <th>Role</th>
+                <th>Model</th>
+                <th>Task</th>
+                <th>In</th>
+                <th>Out</th>
+                <th>Cost (USD)</th>
+                <th>Turns</th>
+              </tr>
+            </thead>
+            <tbody id="usage-table"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div class="plan-modal hidden" id="plan-modal" role="dialog" aria-modal="true" aria-labelledby="plan-title">
+      <div class="plan-dialog">
+        <div class="plan-header">
+          <h2 id="plan-title">Plan</h2>
+          <button class="plan-close" id="plan-close" type="button" aria-label="Close">×</button>
+        </div>
+        <div class="plan-content">
+          <div class="plan-diagrams" id="plan-diagrams"></div>
+          <article class="plan-body markdown" id="plan-body"></article>
+        </div>
+        <div class="plan-decision">
+          <textarea id="plan-feedback" rows="2" placeholder="Düzeltme notların (red için) — mimar bunlara göre yeniden planlar…"></textarea>
+          <div class="plan-decision-actions">
+            <button class="decision-approve" id="plan-approve" type="button">✓ Onayla → build</button>
+            <button class="decision-reject" id="plan-reject" type="button">✗ Düzeltme iste</button>
+          </div>
+          <div class="plan-prompt hidden" id="plan-prompt-box">
+            <label>Dispatch'e yapıştır:</label>
+            <pre id="plan-prompt-text"></pre>
+            <button class="plan-prompt-copy" id="plan-prompt-copy" type="button">Kopyala</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: false, theme: "dark", securityLevel: "strict" });
+      window.mermaid = mermaid;
+    </script>
+    <script src="./app.js?v=usage4"></script>
+  </body>
+</html>

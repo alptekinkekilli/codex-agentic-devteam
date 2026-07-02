@@ -1,0 +1,11 @@
+{
+  "project_name": "My Codex Agentic Project",
+  "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '-').replace('_', '-') }}",
+  "repo_description": "Queue-first Codex multi-agent development workspace",
+  "github_owner": "alptekinkekilli",
+  "default_dashboard_port": "8766",
+  "_copy_without_render": [
+    "{{cookiecutter.project_slug}}/.claude/skills/**",
+    ".claude/skills/**"
+  ]
+}

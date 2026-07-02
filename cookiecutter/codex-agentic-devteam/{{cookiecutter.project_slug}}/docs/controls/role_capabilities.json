@@ -1,0 +1,104 @@
+{
+  "architect": {
+    "may_edit": [
+      ".queue/",
+      "docs/",
+      "agents/",
+      "AGENTS.md",
+      "CLAUDE.md",
+      "GOVERNOR.md",
+      "README.md"
+    ],
+    "must_not_edit": [
+      "scripts/",
+      "public/",
+      ".claude/skills/",
+      "generate_image.py"
+    ],
+    "required_completion_fields": [
+      "summary",
+      "changed_files",
+      "validation"
+    ]
+  },
+  "coder": {
+    "may_edit": [
+      ".queue/",
+      "scripts/",
+      "docs/",
+      ".claude/skills/",
+      "generate_image.py",
+      "README.md"
+    ],
+    "must_not_edit": [
+      "agents/",
+      "GOVERNOR.md",
+      "public/",
+      "scripts/archive_tasks.py",
+      "scripts/generate_dashboard_status.py",
+      "scripts/record_tokens.py",
+      "scripts/serve_dashboard_preview.py"
+    ],
+    "required_completion_fields": [
+      "summary",
+      "changed_files",
+      "validation"
+    ]
+  },
+  "reviewer": {
+    "may_edit": [
+      ".queue/",
+      "docs/"
+    ],
+    "must_not_edit": [
+      "scripts/",
+      "public/",
+      ".claude/skills/",
+      "agents/",
+      "generate_image.py"
+    ],
+    "required_completion_fields": [
+      "summary",
+      "validation"
+    ]
+  },
+  "tester": {
+    "may_edit": [
+      ".queue/",
+      "docs/"
+    ],
+    "must_not_edit": [
+      "scripts/",
+      "public/",
+      ".claude/skills/",
+      "agents/",
+      "generate_image.py"
+    ],
+    "required_completion_fields": [
+      "summary",
+      "validation"
+    ]
+  },
+  "ops": {
+    "may_edit": [
+      ".queue/",
+      "AGENTS.md",
+      "CLAUDE.md",
+      "GOVERNOR.md",
+      "docs/",
+      ".gitignore",
+      "README.md"
+    ],
+    "must_not_edit": [
+      "scripts/",
+      "public/",
+      ".claude/skills/",
+      "agents/",
+      "generate_image.py"
+    ],
+    "required_completion_fields": [
+      "summary",
+      "validation"
+    ]
+  }
+}
